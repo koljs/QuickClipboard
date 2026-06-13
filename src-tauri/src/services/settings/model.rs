@@ -96,6 +96,7 @@ pub struct AppSettings {
     pub ai_input_speed: u32,
     pub ai_newline_mode: String,
     pub ai_output_mode: String,
+    pub screenshot_translate_shortcut: String,
 
     // 鼠标设置
     pub mouse_middle_button_enabled: bool,
@@ -291,6 +292,7 @@ impl Default for AppSettings {
             ai_input_speed: 50,
             ai_newline_mode: "auto".to_string(),
             ai_output_mode: "stream".to_string(),
+            screenshot_translate_shortcut: String::new(),
 
             mouse_middle_button_enabled: false,
             mouse_middle_button_modifier: "None".to_string(),

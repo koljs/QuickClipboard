@@ -261,6 +261,10 @@ pub fn run() {
                 commands::start_screenshot_quick_save,
                 commands::start_screenshot_quick_pin,
                 commands::start_screenshot_quick_ocr,
+                commands::start_screenshot_translate,
+                commands::screenshot_translate_ocr,
+                commands::translate_ocr_lines_cmd,
+                commands::test_ai_translation,
                 commands::copy_text_to_clipboard,
                 commands::check_ai_translation_config,
                 commands::enable_ai_translation_cancel_shortcut,
@@ -327,6 +331,9 @@ pub fn run() {
                 windows::pin_image_window::close_image_preview,
                 windows::pin_image_window::save_pin_image_as,
                 windows::pin_image_window::start_pin_edit_mode,
+                windows::translate_overlay_window::create_translate_overlay,
+                windows::translate_overlay_window::get_translate_overlay_data,
+                windows::translate_overlay_window::close_translate_overlay,
                 utils::screen::get_all_screens,
                 utils::system::get_system_text_scale,
                 commands::il_init,
@@ -445,6 +452,7 @@ pub fn run() {
                 services::webdav_sync::sync_scheduler::set_app_handle(app.handle().clone());
 
                 windows::pin_image_window::init_pin_image_window();
+                windows::translate_overlay_window::init_translate_overlay_window();
                 #[cfg(feature = "gpu-image-viewer")]
                 windows::native_pin_window::setup_event_listener(app.handle());
                 focus::start_focus_listener(app.handle().clone());

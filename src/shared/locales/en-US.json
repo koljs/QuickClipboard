@@ -809,7 +809,9 @@
       "refreshModels": "Refresh Models",
       "test": "Test Configuration",
       "testDesc": "Test if current AI configuration works",
-      "testButton": "Test Connection"
+      "testButton": "Test Connection",
+      "testSuccess": "AI connection test successful",
+      "testFailed": "AI connection test failed"
     },
     "translation": {
       "title": "AI Translation",
@@ -858,7 +860,12 @@
       "promptPlaceholder": "Example: You are a professional translation assistant...",
       "test": "Test Translation",
       "testDesc": "Test if current translation configuration works",
-      "testButton": "Test Translation"
+      "testButton": "Test Translation",
+      "testSuccess": "AI translation connection test successful",
+      "testFailed": "AI translation connection test failed",
+      "screenshotTranslate": "Screenshot Translate Shortcut",
+      "screenshotTranslateDesc": "Press shortcut to select screen area, auto OCR and translate, overlay result on original position",
+      "screenshotTranslatePlaceholder": "Click to set shortcut"
     },
     "quickpaste": {
       "title": "Quick Paste",
@@ -1137,6 +1144,9 @@
     "textExtracted": "Text extracted and copied",
     "extractingText": "Extracting text...",
     "extractTextFailed": "Failed to extract text",
+    "translateImage": "Translate Image",
+    "translatingImage": "Translating...",
+    "translateImageFailed": "Image translation failed",
     "fileOpened": "File opened",
     "locationOpened": "Location opened",
     "pathCopied": "Path copied",

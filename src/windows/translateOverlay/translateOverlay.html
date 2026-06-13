@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="background: transparent; width: 100% !important; height: 100% !important;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>截图翻译</title>
+    <link rel="stylesheet" href="translateOverlay.css">
+</head>
+<body style="background: transparent; width: 100% !important; height: 100% !important;">
+    <div class="overlay-container">
+        <img id="screenshotImage" alt="截图" />
+        <div id="translationLayer" class="translation-layer"></div>
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在翻译...</div>
+        </div>
+        <div id="controlBar" class="control-bar">
+            <button id="btnOriginal" class="ctrl-btn" title="显示原文">原文</button>
+            <button id="btnTranslation" class="ctrl-btn active" title="显示译文">译文</button>
+            <button id="btnBilingual" class="ctrl-btn" title="双语对照">双语</button>
+            <button id="btnCopy" class="ctrl-btn" title="复制译文">复制</button>
+            <button id="btnClose" class="ctrl-btn" title="关闭">✕</button>
+        </div>
+    </div>
+    <script type="module" src="index.js"></script>
+</body>
+</html>

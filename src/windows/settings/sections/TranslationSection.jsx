@@ -8,6 +8,16 @@ import Select from '@shared/components/ui/Select';
 import Textarea from '@shared/components/ui/Textarea';
 import Button from '@shared/components/ui/Button';
 import Slider from '@shared/components/ui/Slider';
+import ShortcutInput from '../components/ShortcutInput';
+import { testAiTranslation } from '@shared/api/system';
+import { toast, TOAST_SIZES, TOAST_POSITIONS } from '@shared/store/toastStore';
+import i18n from '@shared/i18n';
+
+const TOAST_CONFIG = {
+  size: TOAST_SIZES.EXTRA_SMALL,
+  position: TOAST_POSITIONS.BOTTOM_RIGHT
+};
+
 function TranslationSection({
   settings,
   onSettingChange
@@ -69,7 +79,14 @@ function TranslationSection({
   }];
   const handleTestTranslation = async () => {
     setTesting(true);
-    setTimeout(() => setTesting(false), 2000);
+    try {
+      const result = await testAiTranslation();
+      toast.success(i18n.t('settings.translation.testSuccess'), TOAST_CONFIG);
+    } catch (error) {
+      toast.error(i18n.t('settings.translation.testFailed') + ': ' + error, TOAST_CONFIG);
+    } finally {
+      setTesting(false);
+    }
   };
   return <>
       <SettingsSection title={t('settings.translation.title')} description={t('settings.translation.description')}>
@@ -87,6 +104,10 @@ function TranslationSection({
 
         <SettingItem label={t('settings.translation.translateOnPaste')} description={t('settings.translation.translateOnPasteDesc')}>
           <Toggle checked={settings.aiTranslateOnPaste} onChange={checked => onSettingChange('aiTranslateOnPaste', checked)} />
+        </SettingItem>
+
+        <SettingItem label={t('settings.translation.screenshotTranslate')} description={t('settings.translation.screenshotTranslateDesc')}>
+          <ShortcutInput value={settings.screenshotTranslateShortcut || ''} onChange={value => onSettingChange('screenshotTranslateShortcut', value)} placeholder={t('settings.translation.screenshotTranslatePlaceholder')} className="w-56" />
         </SettingItem>
 
         <SettingItem label={t('settings.translation.inputSpeed')} description={t('settings.translation.inputSpeedDesc')}>

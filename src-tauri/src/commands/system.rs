@@ -65,6 +65,30 @@ pub fn start_screenshot_quick_ocr(app: tauri::AppHandle) -> Result<(), String> {
     start_screenshot_by_mode(&app, 3)
 }
 
+// 截图翻译（微信式：截图→OCR→翻译→覆盖显示）
+#[tauri::command]
+pub fn start_screenshot_translate(app: tauri::AppHandle) -> Result<(), String> {
+    #[cfg(feature = "screenshot-suite")]
+    {
+        let app_handle = app.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            // 使用模式4表示截图翻译
+            let result = screenshot_suite::start_screenshot(&app_handle);
+            if let Err(error) = result {
+                eprintln!("启动截图翻译失败: {}", error);
+            }
+        });
+        Ok(())
+    }
+
+    #[cfg(not(feature = "screenshot-suite"))]
+    {
+        let _ = app;
+        Err("当前构建未启用截屏功能".to_string())
+    }
+}
+
 // 检查 AI 翻译配置
 #[tauri::command]
 pub fn check_ai_translation_config() -> Result<Value, String> {

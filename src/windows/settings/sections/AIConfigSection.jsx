@@ -6,6 +6,15 @@ import SettingItem from '../components/SettingItem';
 import Input from '@shared/components/ui/Input';
 import Select from '@shared/components/ui/Select';
 import Button from '@shared/components/ui/Button';
+import { testAiTranslation } from '@shared/api/system';
+import { toast, TOAST_SIZES, TOAST_POSITIONS } from '@shared/store/toastStore';
+import i18n from '@shared/i18n';
+
+const TOAST_CONFIG = {
+  size: TOAST_SIZES.EXTRA_SMALL,
+  position: TOAST_POSITIONS.BOTTOM_RIGHT
+};
+
 function AIConfigSection({
   settings,
   onSettingChange
@@ -33,7 +42,14 @@ function AIConfigSection({
   }];
   const handleTestConfig = async () => {
     setTesting(true);
-    setTimeout(() => setTesting(false), 2000);
+    try {
+      await testAiTranslation();
+      toast.success(i18n.t('settings.aiConfig.testSuccess'), TOAST_CONFIG);
+    } catch (error) {
+      toast.error(i18n.t('settings.aiConfig.testFailed') + ': ' + error, TOAST_CONFIG);
+    } finally {
+      setTesting(false);
+    }
   };
   const handleRefreshModels = async () => {
     setRefreshing(true);

@@ -81,6 +81,7 @@ export default defineConfig({
           contextMenu: resolve(__dirname, 'src/plugins/context_menu/contextMenu.html'),
           inputDialog: resolve(__dirname, 'src/plugins/input_dialog/inputDialog.html'),
           pinImage: resolve(__dirname, 'src/windows/pinImage/pinImage.html'),
+          translateOverlay: resolve(__dirname, 'src/windows/translateOverlay/translateOverlay.html'),
           preview: resolve(__dirname, 'src/windows/preview/index.html'),
           transferShelf: resolve(__dirname, 'src/windows/transferShelf/index.html'),
           receiveBox: resolve(__dirname, 'src/windows/receiveBox/index.html'),

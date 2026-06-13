@@ -255,6 +255,7 @@ function createContentTypeMenuItems(contentType, transferShelves = []) {
       createMenuItem('pin-image', i18n.t('contextMenu.pinToScreen'), { icon: 'ti ti-window-maximize' }),
       createMenuItem('save-image', i18n.t('contextMenu.saveImage'), { icon: 'ti ti-download' }),
       createMenuItem('extract-text', i18n.t('contextMenu.extractText'), { icon: 'ti ti-text-scan-2' }),
+      createMenuItem('translate-image', i18n.t('contextMenu.translateImage'), { icon: 'ti ti-language' }),
       transferShelfItem
     ]
   }
@@ -424,6 +425,18 @@ async function handleContentTypeActions(result, item, index) {
         console.error('OCR识别失败:', error)
         toastStore.removeToast(loadingToastId)
         toast.error(i18n.t('contextMenu.extractTextFailed'), TOAST_CONFIG)
+      }
+    },
+    'translate-image': async () => {
+      const loadingToastId = toast.info(i18n.t('contextMenu.translatingImage'), { duration: 0, ...TOAST_CONFIG })
+      try {
+        const { screenshotTranslateOcr } = await import('@shared/api/system')
+        await screenshotTranslateOcr(filePath)
+        toastStore.removeToast(loadingToastId)
+      } catch (error) {
+        console.error('截图翻译失败:', error)
+        toastStore.removeToast(loadingToastId)
+        toast.error(i18n.t('contextMenu.translateImageFailed') + ': ' + error, TOAST_CONFIG)
       }
     },
     'open-file': async () => {

@@ -464,6 +464,29 @@ pub fn register_screenshot_quick_ocr_hotkey(_shortcut_str: &str) -> Result<(), S
     Ok(())
 }
 
+#[cfg(feature = "screenshot-suite")]
+pub fn register_screenshot_translate_hotkey(shortcut_str: &str) -> Result<(), String> {
+    register_shortcut("screenshot_translate", shortcut_str, |app| {
+        let app = app.clone();
+        std::thread::spawn(move || {
+            if !matches!(ensure_normal_mode_for_hotkey(&app, "启动截图翻译"), Ok(true)) {
+                return;
+            }
+            if is_foreground_globally_disabled() {
+                return;
+            }
+            if let Err(e) = crate::commands::system::start_screenshot_translate(app) {
+                eprintln!("启动截图翻译失败: {}", e);
+            }
+        });
+    })
+}
+
+#[cfg(not(feature = "screenshot-suite"))]
+pub fn register_screenshot_translate_hotkey(_shortcut_str: &str) -> Result<(), String> {
+    Ok(())
+}
+
 pub fn register_toggle_clipboard_monitor_hotkey(shortcut_str: &str) -> Result<(), String> {
     register_shortcut("toggle_clipboard_monitor", shortcut_str, |app| {
         let app_clone = app.clone();
@@ -881,6 +904,12 @@ pub fn reload_from_settings() -> Result<(), String> {
         if settings.screenshot_enabled && !settings.screenshot_quick_ocr_shortcut.is_empty() {
             if let Err(e) = register_screenshot_quick_ocr_hotkey(&settings.screenshot_quick_ocr_shortcut) {
                 eprintln!("注册快速OCR截图快捷键失败: {}", e);
+            }
+        }
+        
+        if settings.ai_translation_enabled && !settings.screenshot_translate_shortcut.is_empty() {
+            if let Err(e) = register_screenshot_translate_hotkey(&settings.screenshot_translate_shortcut) {
+                eprintln!("注册截图翻译快捷键失败: {}", e);
             }
         }
         

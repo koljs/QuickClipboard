@@ -31,6 +31,32 @@ export async function startScreenshotQuickOcr() {
   return await invoke('start_screenshot_quick_ocr')
 }
 
+// 启动截图翻译（微信式：截图→OCR→翻译→覆盖显示）
+export async function startScreenshotTranslate() {
+  return await invoke('start_screenshot_translate')
+}
+
+// 截图翻译：对指定图片执行OCR+翻译+创建覆盖窗口
+export async function screenshotTranslateOcr(imagePath, physicalX = null, physicalY = null, imagePhysicalWidth = null, imagePhysicalHeight = null) {
+  return await invoke('screenshot_translate_ocr', {
+    imagePath,
+    physicalX,
+    physicalY,
+    imagePhysicalWidth,
+    imagePhysicalHeight
+  })
+}
+
+// 翻译OCR行文本
+export async function translateOcrLines(lines, targetLanguage) {
+  return await invoke('translate_ocr_lines_cmd', { lines, targetLanguage })
+}
+
+// 测试AI翻译API连接
+export async function testAiTranslation() {
+  return await invoke('test_ai_translation')
+}
+
 // 捕获所有显示器截图
 export async function captureAllScreenshots() {
   return await invoke('plugin:screenshot-suite|capture_all_screenshots')

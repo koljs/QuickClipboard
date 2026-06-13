@@ -809,7 +809,9 @@
       "refreshModels": "刷新模型列表",
       "test": "测试配置",
       "testDesc": "测试当前AI配置是否正常",
-      "testButton": "测试连接"
+      "testButton": "测试连接",
+      "testSuccess": "AI连接测试成功",
+      "testFailed": "AI连接测试失败"
     },
     "translation": {
       "title": "AI翻译设置",
@@ -858,7 +860,12 @@
       "promptPlaceholder": "例如：你是一个专业的翻译助手，请将用户输入的文本翻译成指定语言...",
       "test": "测试翻译",
       "testDesc": "测试当前翻译配置是否正常工作",
-      "testButton": "测试翻译"
+      "testButton": "测试翻译",
+      "testSuccess": "AI翻译连接测试成功",
+      "testFailed": "AI翻译连接测试失败",
+      "screenshotTranslate": "截图翻译快捷键",
+      "screenshotTranslateDesc": "按下快捷键后截图选区，自动OCR识别并翻译，翻译结果覆盖显示在原位置",
+      "screenshotTranslatePlaceholder": "点击设置快捷键"
     },
     "quickpaste": {
       "title": "便捷粘贴",
@@ -1138,6 +1145,9 @@
     "textExtracted": "文本已提取并复制",
     "extractingText": "正在提取文本...",
     "extractTextFailed": "提取文本失败",
+    "translateImage": "截图翻译",
+    "translatingImage": "正在翻译...",
+    "translateImageFailed": "截图翻译失败",
     "fileOpened": "文件已打开",
     "locationOpened": "位置已打开",
     "pathCopied": "路径已复制",
