@@ -1,0 +1,140 @@
+name: Build Test
+run-name: Build Test ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      community_build:
+        description: '社区版构建（不含私有插件）'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+        shell: bash
+
+      - name: Prepare SSH keys
+        if: ${{ inputs.community_build != true }}
+        run: |
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/screenshot-suite.key <<'EOF'
+          ${{ secrets.SCREENSHOT_SUITE_DEPLOY_KEY }}
+          EOF
+          chmod 600 ~/.ssh/screenshot-suite.key
+
+          cat > ~/.ssh/gpu-image-viewer.key <<'EOF'
+          ${{ secrets.GPU_VIEWER_DEPLOY_KEY }}
+          EOF
+          chmod 600 ~/.ssh/gpu-image-viewer.key
+        shell: bash
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout submodules (SSH)
+        if: ${{ inputs.community_build != true }}
+        run: |
+          git config --global --unset-all url.https://github.com/.insteadOf || true
+          git submodule sync --recursive
+          git submodule update --init --force --depth=1 --recursive
+        shell: bash
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/screenshot-suite.key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes
+
+      - name: Configure Cargo to use git CLI
+        if: ${{ inputs.community_build != true }}
+        run: |
+          mkdir -p ~/.cargo
+          echo '[net]' >> ~/.cargo/config.toml
+          echo 'git-fetch-with-cli = true' >> ~/.cargo/config.toml
+        shell: bash
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            src-tauri/plugins/screenshot-suite/web/package-lock.json
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build the app (full)
+        if: ${{ inputs.community_build != true }}
+        uses: tauri-apps/tauri-action@v0
+        env:
+          CI: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/gpu-image-viewer.key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes
+        with:
+          tagName: test-build
+          releaseName: 'QuickClipboard Test Build'
+          releaseBody: 'Automated test build from ${{ github.ref_name }}'
+          releaseDraft: true
+          prerelease: true
+
+      - name: Build the app (community)
+        if: ${{ inputs.community_build == true }}
+        run: |
+          node scripts/community-build.js
+        env:
+          CI: false
+
+      - name: Prepare portable exe
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $srcExe = "src-tauri/target/release/QuickClipboard.exe"
+          $suffix = if ("${{ inputs.community_build }}" -eq "true") { "_community" } else { "" }
+          $portableExe = "QuickClipboard_${version}${suffix}_portable.exe"
+
+          if (Test-Path $srcExe) {
+            Copy-Item $srcExe $portableExe
+            Write-Host "Created: $portableExe"
+          } else {
+            Write-Host "ERROR: Release exe not found at $srcExe"
+            dir src-tauri/target/release/*.exe 2>$null
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload portable exe as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickClipboard-portable
+          path: QuickClipboard_*_portable.exe
+          retention-days: 7
+
+      - name: Upload to release (full build only)
+        if: ${{ inputs.community_build != true }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: test-build
+          draft: true
+          prerelease: true
+          files: QuickClipboard_*_portable.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
