@@ -82,6 +82,7 @@ export default defineConfig({
           inputDialog: resolve(__dirname, 'src/plugins/input_dialog/inputDialog.html'),
           pinImage: resolve(__dirname, 'src/windows/pinImage/pinImage.html'),
           translateOverlay: resolve(__dirname, 'src/windows/translateOverlay/translateOverlay.html'),
+          screenshotSelect: resolve(__dirname, 'src/windows/screenshotSelect/screenshotSelect.html'),
           preview: resolve(__dirname, 'src/windows/preview/index.html'),
           transferShelf: resolve(__dirname, 'src/windows/transferShelf/index.html'),
           receiveBox: resolve(__dirname, 'src/windows/receiveBox/index.html'),

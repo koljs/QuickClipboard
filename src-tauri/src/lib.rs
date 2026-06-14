@@ -334,6 +334,9 @@ pub fn run() {
                 windows::translate_overlay_window::create_translate_overlay,
                 windows::translate_overlay_window::get_translate_overlay_data,
                 windows::translate_overlay_window::close_translate_overlay,
+                services::screenshot_lite::get_screenshot_image_path,
+                services::screenshot_lite::get_screenshot_select_data,
+                services::screenshot_lite::screenshot_selection_complete,
                 utils::screen::get_all_screens,
                 utils::system::get_system_text_scale,
                 commands::il_init,
@@ -453,6 +456,7 @@ pub fn run() {
 
                 windows::pin_image_window::init_pin_image_window();
                 windows::translate_overlay_window::init_translate_overlay_window();
+                services::screenshot_lite::init();
                 #[cfg(feature = "gpu-image-viewer")]
                 windows::native_pin_window::setup_event_listener(app.handle());
                 focus::start_focus_listener(app.handle().clone());

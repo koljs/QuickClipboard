@@ -391,8 +391,21 @@ pub fn register_screenshot_hotkey(shortcut_str: &str) -> Result<(), String> {
 }
 
 #[cfg(not(feature = "screenshot-suite"))]
-pub fn register_screenshot_hotkey(_shortcut_str: &str) -> Result<(), String> {
-    Ok(())
+pub fn register_screenshot_hotkey(shortcut_str: &str) -> Result<(), String> {
+    register_shortcut("screenshot", shortcut_str, |app| {
+        let app = app.clone();
+        std::thread::spawn(move || {
+            if !matches!(ensure_normal_mode_for_hotkey(&app, "启动截图"), Ok(true)) {
+                return;
+            }
+            if is_foreground_globally_disabled() {
+                return;
+            }
+            if let Err(e) = crate::services::screenshot_lite::start_screenshot_with_mode(&app, 0) {
+                eprintln!("启动截图窗口失败: {}", e);
+            }
+        });
+    })
 }
 
 #[cfg(feature = "screenshot-suite")]
@@ -414,8 +427,21 @@ pub fn register_screenshot_quick_save_hotkey(shortcut_str: &str) -> Result<(), S
 }
 
 #[cfg(not(feature = "screenshot-suite"))]
-pub fn register_screenshot_quick_save_hotkey(_shortcut_str: &str) -> Result<(), String> {
-    Ok(())
+pub fn register_screenshot_quick_save_hotkey(shortcut_str: &str) -> Result<(), String> {
+    register_shortcut("screenshot_quick_save", shortcut_str, |app| {
+        let app = app.clone();
+        std::thread::spawn(move || {
+            if !matches!(ensure_normal_mode_for_hotkey(&app, "启动快速保存截图"), Ok(true)) {
+                return;
+            }
+            if is_foreground_globally_disabled() {
+                return;
+            }
+            if let Err(e) = crate::services::screenshot_lite::start_screenshot_with_mode(&app, 1) {
+                eprintln!("启动快速保存截图失败: {}", e);
+            }
+        });
+    })
 }
 
 #[cfg(feature = "screenshot-suite")]
@@ -437,8 +463,21 @@ pub fn register_screenshot_quick_pin_hotkey(shortcut_str: &str) -> Result<(), St
 }
 
 #[cfg(not(feature = "screenshot-suite"))]
-pub fn register_screenshot_quick_pin_hotkey(_shortcut_str: &str) -> Result<(), String> {
-    Ok(())
+pub fn register_screenshot_quick_pin_hotkey(shortcut_str: &str) -> Result<(), String> {
+    register_shortcut("screenshot_quick_pin", shortcut_str, |app| {
+        let app = app.clone();
+        std::thread::spawn(move || {
+            if !matches!(ensure_normal_mode_for_hotkey(&app, "启动快速贴图截图"), Ok(true)) {
+                return;
+            }
+            if is_foreground_globally_disabled() {
+                return;
+            }
+            if let Err(e) = crate::services::screenshot_lite::start_screenshot_with_mode(&app, 2) {
+                eprintln!("启动快速贴图截图失败: {}", e);
+            }
+        });
+    })
 }
 
 #[cfg(feature = "screenshot-suite")]
@@ -460,8 +499,21 @@ pub fn register_screenshot_quick_ocr_hotkey(shortcut_str: &str) -> Result<(), St
 }
 
 #[cfg(not(feature = "screenshot-suite"))]
-pub fn register_screenshot_quick_ocr_hotkey(_shortcut_str: &str) -> Result<(), String> {
-    Ok(())
+pub fn register_screenshot_quick_ocr_hotkey(shortcut_str: &str) -> Result<(), String> {
+    register_shortcut("screenshot_quick_ocr", shortcut_str, |app| {
+        let app = app.clone();
+        std::thread::spawn(move || {
+            if !matches!(ensure_normal_mode_for_hotkey(&app, "启动快速OCR截图"), Ok(true)) {
+                return;
+            }
+            if is_foreground_globally_disabled() {
+                return;
+            }
+            if let Err(e) = crate::services::screenshot_lite::start_screenshot_with_mode(&app, 3) {
+                eprintln!("启动快速OCR截图失败: {}", e);
+            }
+        });
+    })
 }
 
 #[cfg(feature = "screenshot-suite")]
@@ -483,8 +535,21 @@ pub fn register_screenshot_translate_hotkey(shortcut_str: &str) -> Result<(), St
 }
 
 #[cfg(not(feature = "screenshot-suite"))]
-pub fn register_screenshot_translate_hotkey(_shortcut_str: &str) -> Result<(), String> {
-    Ok(())
+pub fn register_screenshot_translate_hotkey(shortcut_str: &str) -> Result<(), String> {
+    register_shortcut("screenshot_translate", shortcut_str, |app| {
+        let app = app.clone();
+        std::thread::spawn(move || {
+            if !matches!(ensure_normal_mode_for_hotkey(&app, "启动截图翻译"), Ok(true)) {
+                return;
+            }
+            if is_foreground_globally_disabled() {
+                return;
+            }
+            if let Err(e) = crate::services::screenshot_lite::start_screenshot_with_mode(&app, 4) {
+                eprintln!("启动截图翻译失败: {}", e);
+            }
+        });
+    })
 }
 
 pub fn register_toggle_clipboard_monitor_hotkey(shortcut_str: &str) -> Result<(), String> {

@@ -1,0 +1,87 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    cursor: crosshair;
+}
+
+#screenCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Dark overlay covering the entire screen, with a cutout for the selection */
+.selection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    /* No background here - the darkening is handled by selection-rect's box-shadow */
+}
+
+.selection-rect {
+    position: absolute;
+    border: 2px solid #328DFC;
+    /* box-shadow creates the darkened area outside the selection */
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.selection-rect.active {
+    display: block;
+}
+
+.size-indicator {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: none;
+    z-index: 4;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.size-indicator.active {
+    display: block;
+}
+
+.hint {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 8px 20px;
+    border-radius: 6px;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.hint.hidden {
+    opacity: 0;
+}

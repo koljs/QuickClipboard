@@ -1,0 +1,25 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "screenshot-select",
+  "description": "Screenshot selection window capabilities",
+  "windows": [
+    "screenshot-select-*"
+  ],
+  "permissions": [
+    "core:default",
+    "core:event:allow-emit",
+    "core:event:allow-listen",
+    "core:window:allow-close",
+    "core:window:allow-set-position",
+    "core:window:allow-inner-size",
+    "core:window:allow-scale-factor",
+    "core:path:default",
+    "fs:allow-temp-read",
+    "fs:allow-temp-read-recursive",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "**" }]
+    }
+  ]
+}

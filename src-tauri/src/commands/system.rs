@@ -25,9 +25,14 @@ fn start_screenshot_by_mode(app: &tauri::AppHandle, mode: u8) -> Result<(), Stri
 
     #[cfg(not(feature = "screenshot-suite"))]
     {
-        let _ = app;
-        let _ = mode;
-        Err("当前构建未启用截屏功能".to_string())
+        let app_handle = app.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            if let Err(error) = crate::services::screenshot_lite::start_screenshot_with_mode(&app_handle, mode) {
+                eprintln!("启动截屏模式失败: {}", error);
+            }
+        });
+        Ok(())
     }
 }
 
@@ -84,8 +89,14 @@ pub fn start_screenshot_translate(app: tauri::AppHandle) -> Result<(), String> {
 
     #[cfg(not(feature = "screenshot-suite"))]
     {
-        let _ = app;
-        Err("当前构建未启用截屏功能".to_string())
+        let app_handle = app.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            if let Err(error) = crate::services::screenshot_lite::start_screenshot_with_mode(&app_handle, 4) {
+                eprintln!("启动截图翻译失败: {}", error);
+            }
+        });
+        Ok(())
     }
 }
 
