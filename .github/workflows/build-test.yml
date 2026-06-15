@@ -68,7 +68,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: |
             package-lock.json
-            src-tauri/plugins/screenshot-suite/web/package-lock.json
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable

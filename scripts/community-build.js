@@ -14,6 +14,8 @@ const command = isDev ? 'dev' : 'build';
 
 const screenshotCapabilityPath = path.join(rootDir, 'src-tauri', 'capabilities', 'screenshot.json');
 const defaultCapabilityPath = path.join(rootDir, 'src-tauri', 'capabilities', 'default.json');
+const cargoTomlPath = path.join(rootDir, 'src-tauri', 'Cargo.toml');
+const cargoLockPath = path.join(rootDir, 'src-tauri', 'Cargo.lock');
 
 function patchCapabilityFile(filePath) {
     if (!fs.existsSync(filePath)) return () => {};
@@ -51,6 +53,50 @@ function patchCapabilitiesForCommunity() {
     };
 }
 
+// 社区版需要临时移除 SSH git 依赖，否则 Cargo 会尝试拉取私有仓库
+function patchCargoTomlForCommunity() {
+    if (!isCommunity) return () => {};
+
+    const original = fs.readFileSync(cargoTomlPath, 'utf8');
+    let patched = original;
+
+    // 注释掉 gpu-image-viewer 的 SSH git 依赖行
+    patched = patched.replace(
+        /^(gpu-image-viewer\s*=\s*\{[^}]*ssh:\/\/[^\n]*)$/m,
+        '# $1'
+    );
+    // 也注释掉本地路径替代行（如果取消注释的话）
+    patched = patched.replace(
+        /^(#\s*gpu-image-viewer\s*=\s*\{\s*path\s*=)/m,
+        '# $1'
+    );
+
+    if (patched !== original) {
+        fs.writeFileSync(cargoTomlPath, patched, 'utf8');
+        console.log('[build] 已临时移除 gpu-image-viewer SSH 依赖');
+
+        // 删除 Cargo.lock 以强制重新解析依赖
+        if (fs.existsSync(cargoLockPath)) {
+            const lockOriginal = fs.readFileSync(cargoLockPath, 'utf8');
+            fs.unlinkSync(cargoLockPath);
+            console.log('[build] 已删除 Cargo.lock 以重新解析依赖');
+
+            return () => {
+                fs.writeFileSync(cargoTomlPath, original, 'utf8');
+                fs.writeFileSync(cargoLockPath, lockOriginal, 'utf8');
+                console.log('[build] 已恢复 Cargo.toml 和 Cargo.lock');
+            };
+        }
+
+        return () => {
+            fs.writeFileSync(cargoTomlPath, original, 'utf8');
+            console.log('[build] 已恢复 Cargo.toml');
+        };
+    }
+
+    return () => {};
+}
+
 const args = ['run', 'tauri', '--', command];
 if (isCommunity) {
     args.push('--', '--no-default-features');
@@ -63,13 +109,16 @@ console.log(`[build] 执行: npm ${args.join(' ')}`);
 
 let restored = false;
 const restoreCapabilities = patchCapabilitiesForCommunity();
+const restoreCargoToml = patchCargoTomlForCommunity();
 const restoreOnce = () => {
     if (restored) return;
     restored = true;
     try {
+        restoreCargoToml();
+    } catch {}
+    try {
         restoreCapabilities();
-    } catch {
-    }
+    } catch {}
 };
 
 process.on('SIGINT', () => {
