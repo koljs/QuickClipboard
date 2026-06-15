@@ -70,10 +70,33 @@ function patchCargoTomlForCommunity() {
         /^(#\s*gpu-image-viewer\s*=\s*\{\s*path\s*=)/m,
         '# $1'
     );
+    // 注释掉 screenshot-suite 本地路径依赖（社区版 submodule 不存在）
+    patched = patched.replace(
+        /^(screenshot-suite\s*=\s*\{\s*path\s*=\s*"plugins\/screenshot-suite"[^}]*)\}/m,
+        '# $1 }'
+    );
+    // 注释掉 gpu-image-viewer feature 定义
+    patched = patched.replace(
+        /^(gpu-image-viewer\s*=\s*\["dep:gpu-image-viewer"\])$/m,
+        '# $1'
+    );
+    // 注释掉 screenshot-suite feature 定义
+    patched = patched.replace(
+        /^(screenshot-suite\s*=\s*\["dep:screenshot-suite"\])$/m,
+        '# $1'
+    );
+    // 从 default features 中移除 gpu-image-viewer 和 screenshot-suite
+    patched = patched.replace(
+        /^(default\s*=\s*\[)([^\]]*)\]$/m,
+        (match, prefix, features) => {
+            const items = features.split(',').map(s => s.trim()).filter(s => s && s !== '"gpu-image-viewer"' && s !== '"screenshot-suite"');
+            return `${prefix}${items.join(', ')}]`;
+        }
+    );
 
     if (patched !== original) {
         fs.writeFileSync(cargoTomlPath, patched, 'utf8');
-        console.log('[build] 已临时移除 gpu-image-viewer SSH 依赖');
+        console.log('[build] 已临时移除 gpu-image-viewer SSH 依赖和 feature');
 
         // 删除 Cargo.lock 以强制重新解析依赖
         if (fs.existsSync(cargoLockPath)) {
