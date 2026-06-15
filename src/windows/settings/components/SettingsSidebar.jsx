@@ -27,6 +27,14 @@ export const navigationItems = [{
   icon: "ti ti-camera",
   labelKey: 'settings.sections.screenshot'
 }, {
+  id: 'aiConfig',
+  icon: "ti ti-robot",
+  labelKey: 'settings.sections.aiConfig'
+}, {
+  id: 'translation',
+  icon: "ti ti-language",
+  labelKey: 'settings.sections.translation'
+}, {
   id: 'sound',
   icon: "ti ti-volume",
   labelKey: 'settings.sections.sound'

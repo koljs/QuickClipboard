@@ -32,7 +32,10 @@ pub fn init() {
 pub fn start_screenshot_with_mode(app: &AppHandle, mode: u8) -> Result<(), String> {
     // 1. Capture screen using xcap
     let screenshot_image = capture_screen()
-        .map_err(|e| format!("截屏失败: {}", e))?;
+        .map_err(|e| {
+            eprintln!("截屏失败: {}", e);
+            format!("截屏失败: {}", e)
+        })?;
 
     // 2. Save to temp file
     let temp_dir = std::env::temp_dir().join("QuickClipboard_screenshots");
