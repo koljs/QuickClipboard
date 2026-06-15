@@ -189,7 +189,7 @@ pub async fn screenshot_selection_complete(
     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
 
     // Crop the selected region from the full screenshot
-    let img = image::open(&screenshot_path)
+    let mut img = image::open(&screenshot_path)
         .map_err(|e| format!("打开截图失败: {}", e))?;
 
     let crop_x = x.max(0) as u32;
