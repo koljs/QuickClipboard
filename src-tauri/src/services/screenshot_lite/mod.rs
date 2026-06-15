@@ -13,8 +13,8 @@ struct ScreenshotState {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ScreenshotSelectData {
-    mode: u8,
+pub struct ScreenshotSelectData {
+    pub mode: u8,
 }
 
 /// Initialize the screenshot lite module
