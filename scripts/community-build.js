@@ -16,6 +16,7 @@ const screenshotCapabilityPath = path.join(rootDir, 'src-tauri', 'capabilities',
 const defaultCapabilityPath = path.join(rootDir, 'src-tauri', 'capabilities', 'default.json');
 const cargoTomlPath = path.join(rootDir, 'src-tauri', 'Cargo.toml');
 const cargoLockPath = path.join(rootDir, 'src-tauri', 'Cargo.lock');
+const tauriConfPath = path.join(rootDir, 'src-tauri', 'tauri.conf.json');
 
 function patchCapabilityFile(filePath) {
     if (!fs.existsSync(filePath)) return () => {};
@@ -51,6 +52,38 @@ function patchCapabilitiesForCommunity() {
         restoreScreenshot();
         restoreDefault();
     };
+}
+
+// 社区版禁用更新器签名（没有 TAURI_SIGNING_PRIVATE_KEY）
+function patchTauriConfForCommunity() {
+    if (!isCommunity) return () => {};
+
+    const original = fs.readFileSync(tauriConfPath, 'utf8');
+    let json;
+    try {
+        json = JSON.parse(original);
+    } catch {
+        return () => {};
+    }
+
+    let patched = false;
+    if (json.bundle?.createUpdaterArtifacts) {
+        json.bundle.createUpdaterArtifacts = false;
+        patched = true;
+    }
+
+    if (patched) {
+        const patchedContent = JSON.stringify(json, null, 2) + '\n';
+        fs.writeFileSync(tauriConfPath, patchedContent, 'utf8');
+        console.log('[build] 已禁用更新器签名（社区版无签名密钥）');
+
+        return () => {
+            fs.writeFileSync(tauriConfPath, original, 'utf8');
+            console.log('[build] 已恢复 tauri.conf.json');
+        };
+    }
+
+    return () => {};
 }
 
 // 社区版需要临时移除 SSH git 依赖，否则 Cargo 会尝试拉取私有仓库
@@ -133,9 +166,13 @@ console.log(`[build] 执行: npm ${args.join(' ')}`);
 let restored = false;
 const restoreCapabilities = patchCapabilitiesForCommunity();
 const restoreCargoToml = patchCargoTomlForCommunity();
+const restoreTauriConf = patchTauriConfForCommunity();
 const restoreOnce = () => {
     if (restored) return;
     restored = true;
+    try {
+        restoreTauriConf();
+    } catch {}
     try {
         restoreCargoToml();
     } catch {}
